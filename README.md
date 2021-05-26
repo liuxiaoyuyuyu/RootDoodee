@@ -23,9 +23,9 @@ Moreover, when removing duplicated features, there are only 35 unique combinatio
 Only two features are numerical (integers): `Number of Vehicles` and `Number of Drivers`, ranging from [1, 3] and [1,2], respectively. So there are not many numerical relations to explore.
 
 Since the total number of samples (10,000) is much larger than the number of unique features of customers (35), we expect that:
-- 1). For each type of costumer, there is a distribution of the ads ranks to be shown $P_i(r)$, where $i$ is the costumer type and $r \in [1,5]$ denote the ads rank; 
-- 2). Given costumer features and ranks, there is also a probability for the costumer at a rank to click on the ads, $P_C$;
-- 3). Given the clicked costumer, there is also a conditional probability for the insurance to be sold, $P_{S|C}$.
+- 1). For each type of costumer, there is a distribution of the ads ranks to be shown P_i(r), where i is the costumer type and r=1,2,3,4,5 denote the ads rank; 
+- 2). Given costumer features and ranks, there is also a probability for the costumer at a rank to click on the ads, P_C;
+- 3). Given the clicked costumer, there is also a conditional probability for the insurance to be sold, P(S|C).
 
 Thus, statistically, we're not dealing with a classification problem but a probability problem, where the accuracy of prediction is not very important. However, from the perspective of the insurance company, we do want to invest more on the types of customers who are prone to buy the policy after click (Only clicked ads need to be paid). By investing more (bidding more), we could improve the rank of the ads and thus increase the click probability.
 
