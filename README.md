@@ -49,7 +49,7 @@ Thus, statistically, we're not dealing with a classification problem but a proba
 ___
 ## Targets
 
-Notice that we the probabilities are all conditioned, e.g. the probability of rank 2th and then click but not sold. Thus, in principle, we have a classification of 15 type (5 ranks, click and sold or not, no click).
+Notice that the probabilities are all conditioned, e.g. the probability of ads being clicked but not sold, given the 2nd rank . Thus, in principle, we have a classification of 15 type (5 ranks, click and sold or not, no click).
 $$ newtar = 3(r-1) + i, \quad i = 0, 1, 2,$$
 where $i=0,1,2$ for sold, click but not sold and not click, respectively. However, the samples are limitted for some targets to stratify. So a more suitable one to assume that the sold rate is independent once the customer click, then we only need to have 10 type of new targets
 $$ newtar = 2(r-1) + i, \quad i = 0, 1,$$
