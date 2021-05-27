@@ -27,8 +27,9 @@ ___
 ## Features
 
 We'll first explore how the dataset looks like and how the customers are featured.
-
-<img src = "datatable.png" style="width:30%"></img>
+<p align="center">
+<img src = "datatable.png" width="600" height="150"></img>
+</p>
 
 There are four main features for each customers: `Currently Insured`, `Number of Vehicles`, `Number of Drivers` and `Marital Status`, where each could serve as categorical feature with 36 possibilities in total. Note that there are miss data for `Currently Insured` as `unknown`. We could interpret this missing data as the middle of insured or not, but given our limited feature size, we treat it as an independent category.
 
@@ -60,9 +61,9 @@ where i=0,1,2 for sold, click but not sold and not click, respectively. However,
 How should we deal with the relation between bidding price and the ranking? We have no other info from the dataset, or we need to search for more supporting relations. But we could adopt a simple but very reasonable assumption:
 `The overall buying probability of a particular type of clicked customers is independent of their ranking`
 Afterall, the ranking is an evaluation of the market (other companies) to the customer (how much they want to earn this customer). Once the customer clicked, the probability of buying should be the internal feature of the customer. Thus, if we view a customer as a stock, ranking is more like the market price while the buying probability is the EPS (earning per share), measuring how profitable of the stock company.
-
-<img src = "rankDist.png" style="width:40%"></img>
-
+<p align="center">
+<img src = "rankDist.png" width="400" height="250"></img>
+</p>
 Different ranks have similar frequencies.
 
 [Back to Overview](#overview)
