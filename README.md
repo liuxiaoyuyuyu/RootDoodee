@@ -41,6 +41,8 @@ Since the total number of samples (10,000) is much larger than the number of uni
 - 2). Given costumer features and ranks, there is also a probability for the costumer at a rank to click on the ads, P_C;
 - 3). Given the clicked costumer, there is also a conditional probability for the insurance to be sold, P(S|C).
 
+<img src="https://latex.codecogs.com/svg.latex?\Large&space;P_i(r)" />
+
 Thus, statistically, we're not dealing with a classification problem but a probability problem, where the accuracy of prediction is not very important. However, from the perspective of the insurance company, we do want to invest more on the types of customers who are prone to buy the policy after click (Only clicked ads need to be paid). By investing more (bidding more), we could improve the rank of the ads and thus increase the click probability.
 
 [Back to Overview](#overview)
@@ -76,8 +78,6 @@ Since current cost per customer is around 24.0 dollars per customer and the sold
 
 However, we give ads to all the samples. In reality, we should have some budget and stop showing more ads once the number of click with paid price reaches our budget. Current cost is $18,780 and we could set it as our budget and stop once reached though random sampling.
 
-[Back to Overview](#overview)
-___
 
 #### As we can see, from all these sampling trials, the simple linear strategy gives a bit higher cost per customer. We need to add more to current strategy. 
 
@@ -86,7 +86,8 @@ $$ B= 1+e^{-C (P-\bar{P})}$$
 where the bidding price has minimum 1 dollar. The coefficient in the exponent $C\equiv 20$. $\bar{P}$ is the average of $P(S|C)$.
 
 
-
+[Back to Overview](#overview)
+___
 ## Authorship
 
 This project is a collaboration of physicists from Ohio State and Rutgers University: Zengle Huang, Xiaoyu Liu, Yossathorn (Josh) Tawabutr, Fangdi Wen, Angkun Wu, Yushan Yang.
