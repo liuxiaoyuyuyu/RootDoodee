@@ -47,7 +47,7 @@ Thus, statistically, we're not dealing with a classification problem but a proba
 ___
 ## Targets
 
-Notice that the probabilities are all conditioned, e.g. the probability of ads being clicked but not sold, given the 2nd rank . Thus, in principle, we have a classification of 15 type (5 ranks, click and sold or not, no click).
+Notice that the probabilities are all conditioned, e.g. the probability of the 2nd-rank ads being clicked but not sold. Thus, in principle, we have a classification of 15 type (5 ranks, click and sold or not, no click).
 
 <img src="https://latex.codecogs.com/svg.image?newtar&space;=&space;3(r-1)&space;&plus;&space;i,&space;\quad&space;i&space;=&space;0,&space;1,&space;2," title="newtar = 3(r-1) + i, \quad i = 0, 1, 2," />
 
