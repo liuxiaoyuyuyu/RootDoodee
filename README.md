@@ -61,7 +61,7 @@ How should we deal with the relation between bidding price and the ranking? We h
 `The overall buying probability of a particular type of clicked customers is independent of their ranking`
 Afterall, the ranking is an evaluation of the market (other companies) to the customer (how much they want to earn this customer). Once the customer clicked, the probability of buying should be the internal feature of the customer. Thus, if we view a customer as a stock, ranking is more like the market price while the buying probability is the EPS (earning per share), measuring how profitable of the stock company.
 
-<img src = "rankdist.png" style="width:40%"></img>
+<img src = "rankDist.png" style="width:40%"></img>
 
 Different ranks have similar frequencies.
 
@@ -89,7 +89,7 @@ However, we give ads to all the samples. In reality, we should have some budget 
 
 What if we take extreme cases? In the limit of infinite budget and customer samples, we should invest all the budget to the most valuable customer so as to obtain the best cost per customer. However, the limited budget and customer samples requires us invest on more customer with lower bound given by the 4% customer rate. Compared to previous strategy, the linear relation with the average `P(sold|click)` rate might be two slow. Thus, here we try a exponential function function 
 
-<img src="https://latex.codecogs.com/svg.image?B=&space;1&plus;e^{-C&space;(P-\bar{P})}" title="B= 1+e^{-C (P-\bar{P})}" />
+<img src="https://latex.codecogs.com/svg.image?B=&space;1&plus;e^{C&space;(P-\bar{P})}" title="B= 1+e^{C (P-\bar{P})}" />
 
 where the bidding price has minimum 1 dollar. The coefficient in the exponent <img src="https://latex.codecogs.com/svg.image?C\equiv&space;20" title="C\equiv 20" />. <img src="https://latex.codecogs.com/svg.image?\bar{P}" title="\bar{P}" /> is the average of <img src="https://latex.codecogs.com/svg.image?P(S|C)" title="P(S|C)" />.
 
