@@ -37,11 +37,9 @@ Moreover, when removing duplicated features, there are only 35 unique combinatio
 Only two features are numerical (integers): `Number of Vehicles` and `Number of Drivers`, ranging from [1, 3] and [1,2], respectively. So there are not many numerical relations to explore.
 
 Since the total number of samples (10,000) is much larger than the number of unique features of customers (35), we expect that:
-- 1). For each type of costumer, there is a distribution of the ads ranks to be shown P_i(r), where i is the costumer type and r=1,2,3,4,5 denote the ads rank; 
-- 2). Given costumer features and ranks, there is also a probability for the costumer at a rank to click on the ads, P_C;
-- 3). Given the clicked costumer, there is also a conditional probability for the insurance to be sold, P(S|C).
-
-<img src="https://latex.codecogs.com/svg.latex?\Large&space;P_i(r)" />
+- 1). For each type of costumer, there is a distribution of the ads ranks to be shown <img src="https://latex.codecogs.com/svg.image?P_i(r)" title="P_i(r)" />, where i is the costumer type and r=1,2,3,4,5 denote the ads rank; 
+- 2). Given costumer features and ranks, there is also a probability for the costumer at a rank to click on the ads, <img src="https://latex.codecogs.com/svg.image?P_C" title="P_C" />;
+- 3). Given the clicked costumer, there is also a conditional probability for the insurance to be sold, <img src="https://latex.codecogs.com/svg.image?P(S|C)" title="P(S|C)" />.
 
 Thus, statistically, we're not dealing with a classification problem but a probability problem, where the accuracy of prediction is not very important. However, from the perspective of the insurance company, we do want to invest more on the types of customers who are prone to buy the policy after click (Only clicked ads need to be paid). By investing more (bidding more), we could improve the rank of the ads and thus increase the click probability.
 
@@ -50,9 +48,12 @@ ___
 ## Targets
 
 Notice that the probabilities are all conditioned, e.g. the probability of ads being clicked but not sold, given the 2nd rank . Thus, in principle, we have a classification of 15 type (5 ranks, click and sold or not, no click).
-$$ newtar = 3(r-1) + i, \quad i = 0, 1, 2,$$
-where $i=0,1,2$ for sold, click but not sold and not click, respectively. However, the samples are limitted for some targets to stratify. So a more suitable one to assume that the sold rate is independent once the customer click, then we only need to have 10 type of new targets
-$$ newtar = 2(r-1) + i, \quad i = 0, 1,$$
+
+<img src="https://latex.codecogs.com/svg.image?newtar&space;=&space;3(r-1)&space;&plus;&space;i,&space;\quad&space;i&space;=&space;0,&space;1,&space;2," title="newtar = 3(r-1) + i, \quad i = 0, 1, 2," />
+
+where i=0,1,2 for sold, click but not sold and not click, respectively. However, the samples are limitted for some targets to stratify. So a more suitable one to assume that the sold rate is independent once the customer click, then we only need to have 10 type of new targets
+
+<img src="https://latex.codecogs.com/svg.image?newtar&space;=&space;2(r-1)&space;&plus;&space;i,&space;\quad&space;i&space;=&space;0,&space;1," title="newtar = 2(r-1) + i, \quad i = 0, 1," />
 
 #### However
 
@@ -70,8 +71,9 @@ Despite we're working on a probability problem, we could utilize powerful machin
 ___
 ## Strategy for the bidding price
 
-Since the goal is to "optimize the cost per customer while having 4% customer rate over all ads shown". The simpliest intuition is to bid more on valuable customers. If we forget about the $4%$ constraint for a second, to decrease the cost per sold, we only need to consider the probability `P(sold|click)` for a customer as the company only need to pay when clicks happen
-$$P(sold|click)=\frac{P(\text{sold and click})}{P(click)}=\frac{P(sold)}{P(click)}$$
+Since the goal is to "optimize the cost per customer while having 4% customer rate over all ads shown". The simpliest intuition is to bid more on valuable customers. If we forget about the 4% constraint for a second, to decrease the cost per sold, we only need to consider the probability `P(sold|click)` for a customer as the company only need to pay when clicks happen
+
+<img src="https://latex.codecogs.com/svg.image?P(sold|click)=\frac{P(\text{sold&space;and&space;click})}{P(click)}=\frac{P(sold)}{P(click)}" title="P(sold|click)=\frac{P(\text{sold and click})}{P(click)}=\frac{P(sold)}{P(click)}" />
 
 Since current cost per customer is around 24.0 dollars per customer and the sold rate (sold/shown) is 7.83\% and average P(sold|click)=41.69\%, if we set the average as the baseline for 10 dollars and assume we invest linearly with the probability `P(sold|click)`, we'll have cost per customer even higher 24.19 dollars.
 
@@ -82,8 +84,10 @@ However, we give ads to all the samples. In reality, we should have some budget 
 #### As we can see, from all these sampling trials, the simple linear strategy gives a bit higher cost per customer. We need to add more to current strategy. 
 
 What if we take extreme cases? In the limit of infinite budget and customer samples, we should invest all the budget to the most valuable customer so as to obtain the best cost per customer. However, the limited budget and customer samples requires us invest on more customer with lower bound given by the 4% customer rate. Compared to previous strategy, the linear relation with the average `P(sold|click)` rate might be two slow. Thus, here we try a exponential function function 
-$$ B= 1+e^{-C (P-\bar{P})}$$
-where the bidding price has minimum 1 dollar. The coefficient in the exponent $C\equiv 20$. $\bar{P}$ is the average of $P(S|C)$.
+
+<img src="https://latex.codecogs.com/svg.image?B=&space;1&plus;e^{-C&space;(P-\bar{P})}" title="B= 1+e^{-C (P-\bar{P})}" />
+
+where the bidding price has minimum 1 dollar. The coefficient in the exponent <img src="https://latex.codecogs.com/svg.image?C\equiv&space;20" title="C\equiv 20" />. <img src="https://latex.codecogs.com/svg.image?\bar{P}" title="\bar{P}" /> is the average of <img src="https://latex.codecogs.com/svg.image?P(S|C)" title="P(S|C)" />.
 
 
 [Back to Overview](#overview)
