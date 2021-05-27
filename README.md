@@ -61,6 +61,10 @@ How should we deal with the relation between bidding price and the ranking? We h
 `The overall buying probability of a particular type of clicked customers is independent of their ranking`
 Afterall, the ranking is an evaluation of the market (other companies) to the customer (how much they want to earn this customer). Once the customer clicked, the probability of buying should be the internal feature of the customer. Thus, if we view a customer as a stock, ranking is more like the market price while the buying probability is the EPS (earning per share), measuring how profitable of the stock company.
 
+<img src = "rankdist.png" style="width:40%"></img>
+
+Different ranks have similar frequencies.
+
 [Back to Overview](#overview)
 ___
 ## Machine Learning method for probability
