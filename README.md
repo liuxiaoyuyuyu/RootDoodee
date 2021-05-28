@@ -26,47 +26,29 @@ ___
 
 ## Data Exploration
 
-### Customer Features
 
 We'll first explore how the dataset looks like and how the customers are featured.
 <p align="center">
 <img src = "datatable.png" width="600" height="150"></img>
 </p>
 
-There are four main features for each customers: `Currently Insured`, `Number of Vehicles`, `Number of Drivers` and `Marital Status`, where each could serve as categorical feature with 36 possibilities in total. Note that there are miss data for `Currently Insured` as `unknown`. We could interpret this missing data as the middle of insured or not, but given our limited feature size, we treat it as an independent category.
+There are four main features for each customers: `Currently Insured`, `Number of Vehicles`, `Number of Drivers` and `Marital Status`, each of which is a categorical predictor. In total, there are (3 `Currently Insured`) x (3 `Number of Vehicles`) x (2 `Number of Drivers`) x (2 `Marital Status`) = 36 possible combinations, i.e. types. However, we have data from only 35 types of customers. 
 
-Moreover, when removing duplicated features, there are only 35 unique combination of features.
+Furthermore, the `Currently Insured` feature contains 3 categories: `Y`, `N` and `unknown`. There are two possible interpretations of the `unknown` group that result in different treatments. First, we can interpret that `unknown` customers in fact belong to a distinct group; for example, they could voluntarily opt to not provide the information whether or not they already had an insurance when they entered the vertical search website. As a result, we should treat the `Currently Insured` feature as containing 3 saparate categories and use one-hot encoding to express the feature in terms of two dummy variables. On the other hand, we can interpret that any `unknown` customer is either a `Y` or `N` customer with the information missing, and hence they should be treated using an imputation process. This leads to the encoding of `Y` to 1, `N` to 0, and "unknown" to 0.5, so that the `unknown` is in a sense the average between `Y` and `N`.
 
-Only two features are numerical (integers): `Number of Vehicles` and `Number of Drivers`, ranging from [1, 3] and [1,2], respectively. So there are not many numerical relations to explore.
+For each customer in the data set, the bidding price is $10. The ultimate goal of this project is to determine the bidding price <img src="https://latex.codecogs.com/svg.image?\mathbf{B}=(B_1,\ldots,B_{36})" title="B_vec" /> for the 36 customer types, such that the advertisement spending per policy purchase is minimized subject to the constraint that the overall purchase rate is at least 4%. 
+
+Finally, the `rank` at which our company's advertisement appears in the customer's vertical search channel is given for each customer. The `rank` is treated differently in each step of our project. In particular, our [models for click and purchase probability](#machine-learning-method-for-probability) treat `rank` as a categorical predictor, while our [model for rank distribution](#binomial-fit) treats `rank` as the target. More detail about the list of predictors and target(s) for each of our models is given in the corresponding sections for the models.
 
 Since the total number of samples (10,000) is much larger than the number of unique features of customers (35), we expect that:
-- 1). For each type of costumer, there is a distribution of the ads ranks to be shown <img src="https://latex.codecogs.com/svg.image?P_i(r)" title="P_i(r)" />, where i is the costumer type and r=1,2,3,4,5 denote the ads rank; 
-- 2). Given costumer features and ranks, there is also a probability for the costumer at a rank to click on the ads, <img src="https://latex.codecogs.com/svg.image?P_C" title="P_C" />;
-- 3). Given the clicked costumer, there is also a conditional probability for the insurance to be sold, <img src="https://latex.codecogs.com/svg.image?P(S|C)" title="P(S|C)" />.
+- 1). For each type of customer, there is a distribution of the ranks, <img src="https://latex.codecogs.com/svg.image?P_i(r;B_i)" title="P_i(r;B_i)" />, where i is the customer type and r=1,2,3,4,5 denote the rank; 
+- 2). Given customer types and ranks, there is a probability, <img src="https://latex.codecogs.com/svg.image?C_{i,r}" title="C_{i,r}" />, for the customer to click on the advertisement;
+- 3). Given customer types and ranks, there is a probability, <img src="https://latex.codecogs.com/svg.image?S_{i,r}" title="S_{i,r}" />, for the customer to purchase the insurance policy;
 
-Thus, statistically, we're not dealing with a classification problem but a probability problem, where the accuracy of prediction is not very important. However, from the perspective of the insurance company, we do want to invest more on the types of customers who are prone to buy the policy after click (Only clicked ads need to be paid). By investing more (bidding more), we could improve the rank of the ads and thus increase the click probability.
+Items 2) and 3) imply that, given a clicked customer, there is also a conditional probability, <img src="https://latex.codecogs.com/svg.image?P(S|C)" title="P(S|C)" />, for the customer to purchase the insurance policy.
 
-[Back to Overview](#overview)
-___
-### Targets of the Problem
 
-Notice that the probabilities are all conditioned, e.g. the probability of the 2nd-rank ads being clicked but not sold. Thus, in principle, we have a classification of 15 type (5 ranks, click and sold or not, no click).
 
-<img src="https://latex.codecogs.com/svg.image?newtar&space;=&space;3(r-1)&space;&plus;&space;i,&space;\quad&space;i&space;=&space;0,&space;1,&space;2," title="newtar = 3(r-1) + i, \quad i = 0, 1, 2," />
-
-where i=0,1,2 for sold, click but not sold and not click, respectively. However, the samples are limitted for some targets to stratify. So a more suitable one to assume that the sold rate is independent once the customer click, then we only need to have 10 type of new targets
-
-<img src="https://latex.codecogs.com/svg.image?newtar&space;=&space;2(r-1)&space;&plus;&space;i,&space;\quad&space;i&space;=&space;0,&space;1," title="newtar = 2(r-1) + i, \quad i = 0, 1," />
-
-##### However
-
-How should we deal with the relation between bidding price and the ranking? We have no other info from the dataset, or we need to search for more supporting relations. But we could adopt a simple but very reasonable assumption:
-`The overall buying probability of a particular type of clicked customers is independent of their ranking`
-Afterall, the ranking is an evaluation of the market (other companies) to the customer (how much they want to earn this customer). Once the customer clicked, the probability of buying should be the internal feature of the customer. Thus, if we view a customer as a stock, ranking is more like the market price while the buying probability is the EPS (earning per share), measuring how profitable of the stock company.
-<p align="center">
-<img src = "rankDist.png" width="500"></img>
-</p>
-Different ranks have similar frequencies.
 
 [Back to Overview](#overview)
 ___
@@ -76,9 +58,7 @@ As will be clear in a [later section](#gradient-descent), it is necessary for la
 
 Although one can obtain these probabilities simply by counting the data, this is not an option for all types of customers in all ranks, as for some types of customers we do not have the data of those in all the ranks. For example, for uninsured, married customers with 3 vehicles and 2 drivers, we only have their data in ranks 3, 4 and 5. The need to fill in the blanks and predict the probabilities of click and purchase by customers of all types and ranks motivates us to construct a machine learning model to complete the task.
 
-We explored various models with the aim of predicting the probabilities of click and purchase given customer features and ranks. Before we jump into model construction, we explored two ways to treat the `Currently Insured` feature, which contains 3 categories: `Y`, `N` and `unknown`. The first possibility is to treat them as 3 saparate categories and use one-hot encoding to write it in terms of two dummy variables. This method follows the interpretation that `unknown` customers in fact belong to a distinct group; for example, they could voluntarily opt to not provide the information whether or not they already had an insurance when they entered the vertical search website. On the other hand, the second method is to encode `Y` to 1, `N` to 0, and "unknown" to 0.5. This method interprets that any `unknown` customer is either a `Y` or `N` customer with the information missing, and hence they should be treated using an imputation process. When we perform model selection, not only do we train different types of machine learning models, but we also consider these two options to encode the `Currently Insured` feature.
-
-Now, as we select the models to predict the probabilities, the models in consideration include <a href="https://en.wikipedia.org/wiki/Random_forest">random forest,</a> <a href="https://en.wikipedia.org/wiki/Logistic_regression">logistic regression,</a> <a href="https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm">k-nearest neighbor,</a> <a href="https://en.wikipedia.org/wiki/Support-vector_machine">support-vector machine</a> and <a href="https://en.wikipedia.org/wiki/Neural_network">neural network.</a>  Each model is tuned using cross-validation on the training data set, while we set aside the test data set for final model selection. With the goal of predicting the probabilities rather than predicting the definite values of categorical targets, we utilize the metric of <a href="https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence">Kullback-Leibler divergence</a> (KL divergence) to quantify the accuracy of each model's probability predictions. In particular, we compute the KL divergence for the predicted click and purchase probabilities compared to those deduced from the data, for each combination of features for which the actual customer data are available. Then, we sum the statistic over all such feature combinations.
+We explored various models to predict the probabilities. For each model, we considered the [two possible ways](#data-exploration) to encode the `Currently Insured` feature. The models in consideration include <a href="https://en.wikipedia.org/wiki/Random_forest">random forest,</a> <a href="https://en.wikipedia.org/wiki/Logistic_regression">logistic regression,</a> <a href="https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm">k-nearest neighbor,</a> <a href="https://en.wikipedia.org/wiki/Support-vector_machine">support-vector machine</a> and <a href="https://en.wikipedia.org/wiki/Neural_network">neural network.</a>  Each model is tuned using cross-validation on the training data set, while we set aside the test data set for final model selection. With the goal of predicting the probabilities rather than predicting the definite values of categorical targets, we utilize the metric of <a href="https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence">Kullback-Leibler divergence</a> (KL divergence) to quantify the accuracy of each model's probability predictions. In particular, we compute the KL divergence for the predicted click and purchase probabilities compared to those deduced from the data, for each combination of features for which the actual customer data are available. Then, we sum the statistic over all such feature combinations.
 
 The KL divergence for each model is shown in the table below for the predicted probabilities of click and purchase. 
 <p align="center">
@@ -101,7 +81,31 @@ From the table, we see that the random forest and logistic regression for both t
 ___
 ## Basic Optimization Method
 
-Disclaimer: we used the probabilities obtained from <a href="https://github.com/dmlc/xgboost">XGBoost</a>, which is an efficient application of <a href="https://en.wikipedia.org/wiki/Gradient_boosting">Gradient boosting</a>, to perform the computation in this section.
+Statistically, we're not dealing with a classification problem but a probability problem, where the accuracy of prediction is not very important. However, from the perspective of the insurance company, we do want to invest more on the types of customers who are prone to buy the policy after click (Only clicked ads need to be paid). By investing more (bidding more), we could improve the rank of the ads and thus increase the click probability.
+
+### Targets of the Problem
+
+Notice that the probabilities are all conditioned, e.g. the probability of the 2nd-rank ads being clicked but not sold. Thus, in principle, we have a classification of 15 type (5 ranks, click and sold or not, no click).
+
+<img src="https://latex.codecogs.com/svg.image?newtar&space;=&space;3(r-1)&space;&plus;&space;i,&space;\quad&space;i&space;=&space;0,&space;1,&space;2," title="newtar = 3(r-1) + i, \quad i = 0, 1, 2," />
+
+where i=0,1,2 for sold, click but not sold and not click, respectively. However, the samples are limitted for some targets to stratify. So a more suitable one to assume that the sold rate is independent once the customer click, then we only need to have 10 type of new targets
+
+<img src="https://latex.codecogs.com/svg.image?newtar&space;=&space;2(r-1)&space;&plus;&space;i,&space;\quad&space;i&space;=&space;0,&space;1," title="newtar = 2(r-1) + i, \quad i = 0, 1," />
+
+##### However
+
+How should we deal with the relation between bidding price and the ranking? We have no other info from the dataset, or we need to search for more supporting relations. But we could adopt a simple but very reasonable assumption:
+`The overall buying probability of a particular type of clicked customers is independent of their ranking`
+Afterall, the ranking is an evaluation of the market (other companies) to the customer (how much they want to earn this customer). Once the customer clicked, the probability of buying should be the internal feature of the customer. Thus, if we view a customer as a stock, ranking is more like the market price while the buying probability is the EPS (earning per share), measuring how profitable of the stock company.
+<p align="center">
+<img src = "rankDist.png" width="500"></img>
+</p>
+Different ranks have similar frequencies.
+
+### Model and Optimization
+
+In this section, we used the probabilities obtained from <a href="https://github.com/dmlc/xgboost">XGBoost</a>, which is an efficient application of <a href="https://en.wikipedia.org/wiki/Gradient_boosting">Gradient boosting</a>, to perform the computation in this section.
 
 Since the goal is to "optimize the cost per customer while having 4% customer rate over all ads shown". The simpliest intuition is to bid more on valuable customers. If we forget about the 4% constraint for a second, to decrease the cost per sold, we only need to consider the probability `P(sold|click)` for a customer as the company only need to pay when clicks happen
 
@@ -127,7 +131,9 @@ where the bidding price has minimum 1 dollar. The coefficient in the exponent <i
 ___
 ## Binomial Regression for Rank Distribution
 
-Besides the [predictions of click and purchase probabilities](#machine-learning-method-for-probability), another ingredient necessary for our [full optimization method](#gradient-descent) for bidding price is the probability that the insurance company's advertisement is displayed in each ranking from 1 to 5, given the customer's background information and the amount our company bid for this customer. If the advertisement is displayed in rank <img src="https://latex.codecogs.com/svg.image?r" title="r" />, then <img src="https://latex.codecogs.com/svg.image?r-1" title="r-1" /> out of the 4 other companies competing in the vertical search channel bid higher than our company. The main goal of this section is to determine the probability mass function (PMF) <img src="https://latex.codecogs.com/svg.image?P_i(r;B_i)" title="Pi" /> of <img src="https://latex.codecogs.com/svg.image?r" title="r" /> given the bidding amount <img src="https://latex.codecogs.com/svg.image?B_i" title="Bi" /> for a customer with combination of features (i.e. type) <img src="https://latex.codecogs.com/svg.image?i" title="i" />. To do so, we make the following assumptions for each <img src="https://latex.codecogs.com/svg.image?i" title="i" />.
+Besides the [predictions of click and purchase probabilities](#machine-learning-method-for-probability), another ingredient necessary for our [full optimization method](#gradient-descent) for bidding price is the probability that the insurance company's advertisement is displayed in each ranking from 1 to 5, given the customer's background information and the amount our company bid for this customer. In this section, we construct a model with features: `Currently Insured`, `Number of Vehicles`, `Number of Drivers` and `Marital Status`, with the goal to predict the probability for each value of `rank`. 
+
+If the advertisement is displayed in rank <img src="https://latex.codecogs.com/svg.image?r" title="r" />, then <img src="https://latex.codecogs.com/svg.image?r-1" title="r-1" /> out of the 4 other companies competing in the vertical search channel bid higher than our company. The main goal of this section is to determine the probability mass function (PMF) <img src="https://latex.codecogs.com/svg.image?P_i(r;B_i)" title="Pi" /> of <img src="https://latex.codecogs.com/svg.image?r" title="r" /> given the bidding amount <img src="https://latex.codecogs.com/svg.image?B_i" title="Bi" /> for a customer with combination of features (i.e. type) <img src="https://latex.codecogs.com/svg.image?i" title="i" />. To do so, we make the following assumptions for each <img src="https://latex.codecogs.com/svg.image?i" title="i" />.
 - For a fixed bidding price <img src="https://latex.codecogs.com/svg.image?B_i" title="Bi" />, each of the 4 other companies has the same probability, <img src="https://latex.codecogs.com/svg.image?\pi_i(B_i)" title="pi_i" />, of bidding higher than our company.
 - Each of the 4 companies bid independently.
 
@@ -171,14 +177,14 @@ for all customer types. This number implies that, if we decrease our bidding pri
 ___
 ## Full Optimization Method
 
-<p>This section describes our full optimization method to determine the bidding price that minimizes the cost per customer's purchase, while keeping the overall purchase rate at 4% or higher. Throughout the section, we denote by <img src="https://latex.codecogs.com/svg.image?i\in\{1,\ldots,36\}" title="i_set" /> the 36 combinations of customer's features excluding the rank. This number comes from (3 `Currently Insured`) x (3 `Number of Vehicles`) x (2 `Number of Drivers`) x (2 `Marital Status`). Also, let <img src="https://latex.codecogs.com/svg.image?\mathbf{B}=(B_1,\ldots,B_{36})" title="B_vec" /> be the vector of bidding prices for the 36 customer types. In terms of these vector and index, together with the rank <img src="https://latex.codecogs.com/svg.image?r" title="r" />, we define the following quantities.</p>
+<p>This section describes our full optimization method to determine the bidding price that minimizes the cost per customer's purchase, while keeping the overall purchase rate at 4% or higher. The optimization algorithm presented in this section takes as inputs the following quantitites deduced either from the data or from the models we developed in prior sections. </p>
 <p>- <img src="https://latex.codecogs.com/svg.image?M_i" title="M_i" /> = (Number of type-<img src="https://latex.codecogs.com/svg.image?i" title="i" /> customers)/(Total number of customers). This number relates to the customer population, and for the sake of this problem we deduce it from counting the data.</p>
 <p>- <img src="https://latex.codecogs.com/svg.image?C_{i,r}" title="C_ir" /> = (Number of type-<img src="https://latex.codecogs.com/svg.image?i" title="i" /> customers in rank <img src="https://latex.codecogs.com/svg.image?r" title="r" /> who click)/(Number of type-<img src="https://latex.codecogs.com/svg.image?i" title="i" /> customers in rank <img src="https://latex.codecogs.com/svg.image?r" title="r" />). This is the probability of click for customers of type <img src="https://latex.codecogs.com/svg.image?i" title="i" /> and rank <img src="https://latex.codecogs.com/svg.image?r" title="r" /> [previously predicted by our probability models.](#machine-learning-method-for-probability)</p>
 <p>- <img src="https://latex.codecogs.com/svg.image?S_{i,r}" title="S_ir" /> = (Number of type-<img src="https://latex.codecogs.com/svg.image?i" title="i" /> customers in rank <img src="https://latex.codecogs.com/svg.image?r" title="r" /> who purchase)/(Number of type-<img src="https://latex.codecogs.com/svg.image?i" title="i" /> customers in rank <img src="https://latex.codecogs.com/svg.image?r" title="r" />). This is the probability of purchase for customers of type <img src="https://latex.codecogs.com/svg.image?i" title="i" /> and rank <img src="https://latex.codecogs.com/svg.image?r" title="r" />, also [predicted by our probability models.](#machine-learning-method-for-probability)</p>
-<p>- <img src="https://latex.codecogs.com/svg.image?P_i(r;B_i)" title="Pi" /> = (Number of type-<img src="https://latex.codecogs.com/svg.image?i" title="i" /> customers in rank <img src="https://latex.codecogs.com/svg.image?r" title="r" />)/(Number of type-<img src="https://latex.codecogs.com/svg.image?i" title="i" /> customers). This is the rank distribution for customers of type <img src="https://latex.codecogs.com/svg.image?i" title="i" />, which is [predicted by our binomial regression model.](#binomial-fit)</p>
+<p>- <img src="https://latex.codecogs.com/svg.image?P_i(r;B_i)" title="Pi" /> = (Number of type-<img src="https://latex.codecogs.com/svg.image?i" title="i" /> customers in rank <img src="https://latex.codecogs.com/svg.image?r" title="r" />)/(Number of type-<img src="https://latex.codecogs.com/svg.image?i" title="i" /> customers). This is the rank distribution for customers of type <img src="https://latex.codecogs.com/svg.image?i" title="i" /> given the bidding price <img src="https://latex.codecogs.com/svg.image?B_i" title="B_i" />. The distribution's parameters are [determined by our binomial regression model.](#binomial-fit)</p>
 <p>Given these definitions, we define the following functions of the bidding vector.</p>
-<p>- <img src="https://latex.codecogs.com/svg.image?f(\mathbf{B})=\sum_{i,r}M_iC_{i,r}B_iP_i(B_i,r)" title="f(B)_def" /></p>
-<p>- <img src="https://latex.codecogs.com/svg.image?g(\mathbf{B})=\sum_{i,r}M_iS_{i,r}P_i(B_i,r)" title="g(B)_def" /></p>
+<p>- <img src="https://latex.codecogs.com/svg.image?f(\mathbf{B})=\sum_{i,r}M_iC_{i,r}B_iP_i(r;B_i)" title="f(B)_def" /></p>
+<p>- <img src="https://latex.codecogs.com/svg.image?g(\mathbf{B})=\sum_{i,r}M_iS_{i,r}P_i(r;B_i)" title="g(B)_def" /></p>
 <p>Physically, <img src="https://latex.codecogs.com/svg.image?\frac{f(\mathbf{B})}{g(\mathbf{B})}" title="f/g" /> is the total advertisement budget spent divided by the total number of sales, and <img src="https://latex.codecogs.com/svg.image?g(\mathbf{B})" title="g(B)" /> is the overall proportion of customers who purchase. This allows us to express our constrained optimization problem can be phrased as</p>
 <p>- Minimize: <img src="https://latex.codecogs.com/svg.image?\frac{f(\mathbf{B})}{g(\mathbf{B})}" title="f/g" /></p>
 <p>- Constraint: <img src="https://latex.codecogs.com/svg.image?g(\mathbf{B})\geq%200.04" title="g_constraint" /></p>
@@ -204,9 +210,9 @@ ___
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Else, return <img src="https://latex.codecogs.com/svg.image?\mathbf{B}=\mathbf{B}^{(i)}" title="\mathbf{B}=\mathbf{B}^{(i)}" />.</p>
 <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Else, return <img src="https://latex.codecogs.com/svg.image?\mathbf{B}=\mathbf{B}^{(i)}" title="\mathbf{B}=\mathbf{B}^{(i)}" />.</p>
 
-<p>The first step to perform this algorithm is to compute the gradient of <img src="https://latex.codecogs.com/svg.image?\frac{f(\mathbf{B})}{g(\mathbf{B})}" title="f/g" />. Using the chain rules on the binomial distribution PMF, <img src="https://latex.codecogs.com/svg.image?P_i(B_i,r)={4%20\choose%20r-1}\pi_i^{r-1}(1-\pi_i)^{5-r}" title="P_i(B_i,r)={4%20\choose%20r-1}\pi_i^{r-1}(1-\pi_i)^{5-r}" />, and the scaled inverse link function, <img src="https://latex.codecogs.com/svg.image?\pi_i(B_i)=\frac{1}{1+\exp\left\{-\left[a_i(B_i-10)+b_{i0}\right]\right\}}" title="\pi_i(B_i)=\frac{1}{1+\exp\left\{-\left[a_i(B_i-10)+b_{i0}\right]\right\}}" />, we obtain the following component form of the gradient.</p>
+<p>The first step to perform this algorithm is to compute the gradient of <img src="https://latex.codecogs.com/svg.image?\frac{f(\mathbf{B})}{g(\mathbf{B})}" title="f/g" />. Using the chain rules on the binomial distribution PMF, <img src="https://latex.codecogs.com/svg.image?P_i(r;B_i)={4%20\choose%20r-1}\pi_i^{r-1}(1-\pi_i)^{5-r}" title="P_i(B_i,r)={4%20\choose%20r-1}\pi_i^{r-1}(1-\pi_i)^{5-r}" />, and the scaled inverse link function, <img src="https://latex.codecogs.com/svg.image?\pi_i(B_i)=\frac{1}{1+\exp\left\{-\left[a_i(B_i-10)+b_{i0}\right]\right\}}" title="\pi_i(B_i)=\frac{1}{1+\exp\left\{-\left[a_i(B_i-10)+b_{i0}\right]\right\}}" />, we obtain the following component form of the gradient.</p>
 <p align="center">
-<img src="https://latex.codecogs.com/svg.image?\frac{\partial}{\partial%20B_j}\frac{f(\mathbf{B})}{g(\mathbf{B})}=\frac{M_j}{g(\mathbf{B})}\sum_r\left\{\left[1+a_jB_j(r-1-4\pi_j)\right]C_{j,r}-\frac{f(\mathbf{B})}{g(\mathbf{B})}a_j(r-1-4\pi_j)S_{j,r}\right\}P_j(B_j,r)" title="gradient_f/g" />
+<img src="https://latex.codecogs.com/svg.image?\frac{\partial}{\partial%20B_j}\frac{f(\mathbf{B})}{g(\mathbf{B})}=\frac{M_j}{g(\mathbf{B})}\sum_r\left\{\left[1+a_jB_j(r-1-4\pi_j)\right]C_{j,r}-\frac{f(\mathbf{B})}{g(\mathbf{B})}a_j(r-1-4\pi_j)S_{j,r}\right\}P_j(r;B_j)" title="gradient_f/g" />
 </p>
 
 <p>Since the function <img src="https://latex.codecogs.com/svg.image?\frac{f(\mathbf{B})}{g(\mathbf{B})}" title="f/g" /> we are minimizing in this problem has a rather complicated form, it likely contains many local minima. Hence, we should run the algorithm multiple  (HOW MANY?)</p>
