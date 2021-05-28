@@ -145,9 +145,9 @@ Hence, this is a <a href="https://en.wikipedia.org/wiki/Binomial_regression">bin
 <p>- The values of <img src="https://latex.codecogs.com/svg.image?\hat{\pi}_i" title="pi_i_hat" />, which is a probability, gets mapped onto the whole real line, which is the range for linear functions of <img src="https://latex.codecogs.com/svg.image?B_i" title="Bi" />.</p>
 <p>- A change in bidding price has more impact on <img src="https://latex.codecogs.com/svg.image?\hat{\pi}_i" title="pi_i_hat" /> and hence <img src="https://latex.codecogs.com/svg.image?P_i(r;B_i)" title="Pi" /> if <img src="https://latex.codecogs.com/svg.image?B_i" title="Bi" /> is in the region where <img src="https://latex.codecogs.com/svg.image?\hat{\pi}_i" title="pi_i_hat" /> is close to 0.5, e.g. an increase from $8 to $10. This should be contrasted to e.g. an increase from $1000 to $1002, whose impact on <img src="https://latex.codecogs.com/svg.image?\hat{\pi}_i" title="pi_i_hat" /> is minimal. </p>
 
-<p>In our approach, we fit the ranking distribution from the data, in which the bidding price is $10 for all customers, with the binomial PMF to estimate <img src="https://latex.codecogs.com/svg.image?\pi_i(B_i=\$10)" title="pi_i(Bi=10)" /> for each customer type <img src="https://latex.codecogs.com/svg.image?i" title="i" />. Then, we use the results to compute <img src="https://latex.codecogs.com/svg.image?b_{i0}" title="bi0" />'s using</p>
+<p>In our approach, we fit the ranking distribution from the data, in which the bidding price is $10 for all customers, with the binomial PMF to estimate <img src="https://latex.codecogs.com/svg.image?\hat{\pi}_i(B_i=\$10)" title="pi_i(Bi=10)" /> for each customer type <img src="https://latex.codecogs.com/svg.image?i" title="i" />. Then, we use the results to compute <img src="https://latex.codecogs.com/svg.image?b_{i0}" title="bi0" />'s using</p>
 <p align="center">
-<img src="https://latex.codecogs.com/svg.image?b_{i0}=\ln\left(\frac{\pi_i}{1-\pi_i}\right)\bigg|_{B_i=\$10}" title="bi0_eqn" />
+<img src="https://latex.codecogs.com/svg.image?b_{i0}=\ln\left(\frac{\hat{\pi}_i}{1-\hat{\pi}_i}\right)\bigg|_{B_i=\$10}" title="bi0_eqn" />
 </p>
 This method results in the following fits for various customer types. <br />
 <br />
@@ -160,7 +160,7 @@ This method results in the following fits for various customer types. <br />
 
 As for <img src="https://latex.codecogs.com/svg.image?a_i" title="a_i" />, we require the data at different bidding price in order to make a well-inform estimate of the parameter. Instead, we make another assumption that it is -ln(7) (HOW MUCH??? PLEASE MODIFY TO THE NUMBER YOU USED.) 
 
-for all customer types. This number implies that, if we decrease our bidding price by $1, the odd, <img src="https://latex.codecogs.com/svg.image?\frac{\pi_i}{1-\pi_i}" title="odd" />, that another company bids higher than ours will increase by a multiple of 7. (MODIFY THE NUMBER PLEASE)
+for all customer types. This number implies that, if we decrease our bidding price by $1, the odd, <img src="https://latex.codecogs.com/svg.image?\frac{\hat{\pi}_i}{1-\hat{\pi}_i}" title="odd_hat" />, that another company bids higher than ours will increase by a multiple of 7. (MODIFY THE NUMBER PLEASE)
 
 
 
