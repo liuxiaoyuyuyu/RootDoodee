@@ -86,8 +86,8 @@ From the table, we see that the random forest and logistic regression for both t
 
 In order to illustrate how well each model fits the actual probabilities, we show their residual plots below. In each plot, the horizontal axis corresponds the various combinations of values of categorical predictors. The vertical axis is the probability deduced from counting the raw data minus that predicted by the model. Note that only the combinations of predictors with available data are plotted.
 <p align="center">
-<img src = "Pclick_residuals.png.png" width="600"></img>
-<img src = "Psold_residuals.png.png" width="600"></img>
+<img src = "Pclick_residuals.png" width="600"></img>
+<img src = "Psold_residuals.png" width="600"></img>
 </p>
 
 
