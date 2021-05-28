@@ -7,7 +7,9 @@ ___
 - [Project description](#description)
 - [Data Exploration](#data-exploration)
 - [Machine learning approaches for probabilities](#machine-learning-method-for-probability)
-- [Strategy for the bidding price](#strategy-for-the-bidding-price)
+- [Basic optimization method](#strategy-for-the-bidding-price)
+- [Binomial regression for rank distribution](#binomial-fit)
+- [Full optimization method](#gradient-descent)
 - [Authors](#authorship)
 
 ___
@@ -70,7 +72,7 @@ Different ranks have similar frequencies.
 ___
 ## Machine Learning Approaches for Probabilities
 
-As will be clear later, it is necessary for later steps in this project to know the probability that a customer will click on our insurance company advertisement and the probability that he/she will purchase the insurance company's policy, given the customer information and the ranking in which the advertisement is displayed. In short, we will construct models with features: `Currently Insured`, `Number of Vehicles`, `Number of Drivers`, `Marital Status` and `rank`. Each model will separately predict: `Probability of click` and `Probability of purchase`.
+As will be clear in a [later section](#gradient-descent), it is necessary for later steps in this project to know the probability that a customer will click on our insurance company advertisement and the probability that he/she will purchase the insurance company's policy, given the customer information and the ranking in which the advertisement is displayed. In short, we will construct models with features: `Currently Insured`, `Number of Vehicles`, `Number of Drivers`, `Marital Status` and `rank`. Each model will separately predict: `Probability of click` and `Probability of purchase`.
 
 Although one can obtain these probabilities simply by counting the data, this is not an option for all types of customers in all ranks, as for some types of customers we do not have the data of those in all the ranks. For example, for uninsured, married customers with 3 vehicles and 2 drivers, we only have their data in ranks 3, 4 and 5. The need to fill in the blanks and predict the probabilities of click and purchase by customers of all types and ranks motivates us to construct a machine learning model to complete the task.
 
@@ -98,7 +100,7 @@ In order to illustrate how well each model fits the actual probabilities, we sho
 
 [Back to Overview](#overview)
 ___
-## Strategy for the Bidding Price
+## Basic Optimization Method
 
 Disclaimer: we used the probabilities obtained from <a href="https://github.com/dmlc/xgboost">XGBoost</a>, which is an efficient application of <a href="https://en.wikipedia.org/wiki/Gradient_boosting">Gradient boosting</a>, to perform the computation in this section.
 
@@ -119,6 +121,59 @@ What if we take extreme cases? In the limit of infinite budget and customer samp
 <img src="https://latex.codecogs.com/svg.image?B=&space;1&plus;e^{C&space;(P-\bar{P})}" title="B= 1+e^{C (P-\bar{P})}" />
 
 where the bidding price has minimum 1 dollar. The coefficient in the exponent <img src="https://latex.codecogs.com/svg.image?C\equiv&space;20" title="C\equiv 20" />. <img src="https://latex.codecogs.com/svg.image?\bar{P}" title="\bar{P}" /> is the average of <img src="https://latex.codecogs.com/svg.image?P(S|C)" title="P(S|C)" />.
+
+
+
+[Back to Overview](#overview)
+___
+## Binomial Regression for Rank Distribution
+
+Besides the [predictions of click and purchase probabilities](#machine-learning-method-for-probability), another ingredient necessary for our [full optimization method](#gradient-descent) for bidding price is the probability that the insurance company's advertisement is displayed in each ranking from 1 to 5, given the customer's background information and the amount our company bid for this customer. If the advertisement is displayed in rank <img src="https://latex.codecogs.com/svg.image?r" title="r" />, then <img src="https://latex.codecogs.com/svg.image?r-1" title="r-1" /> out of the 4 other companies competing in the vertical search channel bid higher than our company. The main goal of this section is to determine the probability mass function (PMF) <img src="https://latex.codecogs.com/svg.image?P_i(r;B_i)" title="Pi" /> of <img src="https://latex.codecogs.com/svg.image?r" title="r" /> given the bidding amount <img src="https://latex.codecogs.com/svg.image?B_i" title="Bi" /> for a customer with combination of features (i.e. type) <img src="https://latex.codecogs.com/svg.image?i" title="i" />. To do so, we make the following assumptions for each <img src="https://latex.codecogs.com/svg.image?i" title="i" />.
+-1). For a fixed bidding price <img src="https://latex.codecogs.com/svg.image?B_i" title="Bi" />, each of the 4 other companies has the same probability, <img src="https://latex.codecogs.com/svg.image?\pi_i(B_i)" title="pi_i" />, of bidding higher than our company.
+-2). Each of the 4 companies bid independently.
+
+With the two assumptions above, we deduce that <img src="https://latex.codecogs.com/svg.image?P_i(r;%20B_i)" title="Pi" /> follows a binomial distribution in <img src="https://latex.codecogs.com/svg.image?r-1" title="r-1" /> with <img src="https://latex.codecogs.com/svg.image?n=4" title="n=4" /> trials and probability of success <img src="https://latex.codecogs.com/svg.image?\pi_i(B_i)" title="pi_i" />, depending on the bidding price <img src="https://latex.codecogs.com/svg.image?B_i" title="Bi" />: 
+<p align="center">
+<img src="https://latex.codecogs.com/svg.image?P_i(r;%20B_i)={4\choose%20r-1}\left[\pi_i(B_i)\right]^{r-1}\left[1-\pi_i(B_i)\right]^{5-r}" title="binom_pmf" />
+</p>
+Hence, this is a <a href="https://en.wikipedia.org/wiki/Binomial_regression">binomial regression problem.</a> 
+
+To relate for each <img src="https://latex.codecogs.com/svg.image?i" title="i" /> the estimated probability of success <img src="https://latex.codecogs.com/svg.image?\hat{\pi}_i" title="pi_i_hat" /> with <img src="https://latex.codecogs.com/svg.image?B_i" title="Bi" />, we employ the <a href="https://en.wikipedia.org/wiki/Generalized_linear_model#Link_function">canonical link function,</a> that is, the logistic link function. This implies that
+<p align="center">
+<img src="https://latex.codecogs.com/svg.image?\hat{\pi}_i=\frac{1}{1+e^{-\left[a_i(B_i-10)+b_{i0}\right]}}" title="logistic" />
+</p>
+Here, <img src="https://latex.codecogs.com/svg.image?b_{i0}" title="bi0" /> implies the amount of bidding <img src="https://latex.codecogs.com/svg.image?B_i" title="Bi" /> at which <img src="https://latex.codecogs.com/svg.image?\hat{\pi}_i=\frac{1}{2}" title="pi_i_hat=1/2" />, while <img src="https://latex.codecogs.com/svg.image?a_i<0" title="a_i<0" /> measures how spread-out the other companies' bidding prices are. In particular, larger <img src="https://latex.codecogs.com/svg.image?\left|a_i\right|" title="abs_a_i" /> means other companies’ bidding prices are closer to one another (e.g $10.1, 10.2, $9.8...), and smaller <img src="https://latex.codecogs.com/svg.image?\left|a_i\right|" title="abs_a_i" /> means other companies’ bidding prices are more spread out (e.g $7, $9, $15...). 
+
+In our approach, we fit the ranking distribution from the data, in which the bidding price is $10 for all customers, with the binomial PMF to estimate <img src="https://latex.codecogs.com/svg.image?\pi_i(B_i=\$10)" title="pi_i(Bi=10)" /> for each customer type <img src="https://latex.codecogs.com/svg.image?i" title="i" />. Then, we use the results to compute <img src="https://latex.codecogs.com/svg.image?b_{i0}" title="bi0" />'s using 
+<p align="center">
+<img src="https://latex.codecogs.com/svg.image?b_{i0}=\ln\left(\frac{\pi_i}{1-\pi_i}\right)\Big|_{B_i=\$10}" title="bi0_eqn" />
+</p>
+This method results in the following fits for various customer types. 
+<p align="center">
+<img src = "Binomial_regression_plots.png" width="900"></img>
+</p>
+The plots above display the probabilities of being in rank <img src="https://latex.codecogs.com/svg.image?r" title="r" /> for each customer type. The orange markers represent the actual probabilities deduced from counting the data, while the blue markers represent those resulted from the fits.
+
+(PERHAPS PROVIDE A TABLE OF b_i0's HERE)
+
+As for <img src="https://latex.codecogs.com/svg.image?a_i" title="a_i" />, we require the data at different bidding price in order to make a well-inform estimate of the parameter. Instead, we make another assumption that it is -ln(7) (HOW MUCH??? PLEASE MODIFY TO THE NUMBER YOU USED.) 
+
+for all customer types. This number implies that, if we decrease our bidding price by $1, the odd (<img src="https://latex.codecogs.com/svg.image?\frac{\pi_i}{1-\pi_i}" title="odd" />) that another company bids higher than ours will increase by a multiple of 7. (MODIFY THE NUMBER PLEASE)
+
+
+
+
+
+
+[Back to Overview](#overview)
+___
+## Full Optimization Method
+
+Will do. -JT-
+
+
+
+
 
 
 [Back to Overview](#overview)
