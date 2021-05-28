@@ -164,9 +164,7 @@ This method results in the following fits for various customer types. <br />
 
 (PERHAPS PROVIDE A TABLE OF b_i0's HERE. ALSO, IS IT POSSIBLE TO GIVE SOME NUMBERS THAT TELL THE READERS HOW WELL THE BINOMIAL FITS ARE?)
 
-As for <img src="https://latex.codecogs.com/svg.image?a_i" title="a_i" />, we require the data at different bidding price in order to make a well-inform estimate of the parameter. Instead, we make another assumption that it is -ln(7) (HOW MUCH??? PLEASE MODIFY TO THE NUMBER YOU USED.) 
-
-for all customer types. This number implies that, if we decrease our bidding price by $1, the odd, <img src="https://latex.codecogs.com/svg.image?\frac{\hat{\pi}_i}{1-\hat{\pi}_i}" title="odd_hat" />, that another company bids higher than ours will increase by a multiple of 7. (MODIFY THE NUMBER PLEASE)
+As for <img src="https://latex.codecogs.com/svg.image?a_i" title="a_i" />, we require the data at different bidding price in order to make a well-inform estimate of the parameter. Instead, we make another assumption that it is -0.5 for all customer types. This number implies that, if we decrease our bidding price by $1, the odd, <img src="https://latex.codecogs.com/svg.image?\frac{\hat{\pi}_i}{1-\hat{\pi}_i}" title="odd_hat" />, that another company bids higher than ours will increase by a multiple of <img src="https://latex.codecogs.com/svg.image?e^{0.5}\simeq%201.65" title="e^0.5" />. 
 
 
 
