@@ -156,7 +156,7 @@ This method results in the following fits for various customer types. <br />
 </p>
 <p>The plots above display the probabilities of being in rank <img src="https://latex.codecogs.com/svg.image?r" title="r" /> for each customer type. The orange markers represent the actual probabilities deduced from counting the data, while the blue markers represent those resulted from the fits.</p>
 
-(PERHAPS PROVIDE A TABLE OF b_i0's HERE)
+(PERHAPS PROVIDE A TABLE OF b_i0's HERE. ALSO, IS IT POSSIBLE TO GIVE SOME NUMBERS THAT TELL THE READERS HOW WELL THE BINOMIAL FITS ARE?)
 
 As for <img src="https://latex.codecogs.com/svg.image?a_i" title="a_i" />, we require the data at different bidding price in order to make a well-inform estimate of the parameter. Instead, we make another assumption that it is -ln(7) (HOW MUCH??? PLEASE MODIFY TO THE NUMBER YOU USED.) 
 
