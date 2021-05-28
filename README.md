@@ -84,6 +84,13 @@ The KL divergence for each model is shown in the table below for the predicted p
 </p>
 From the table, we see that the random forest and logistic regression for both treatments of the `Currently Insured` feature have the lowest KL divergence, which implies better matches with the probabilities deduced from the data. This is true for the predictions of both probabilities. Since the fifth-best model, neural network, has total KL-divergence of more than 4 times the fourth-best model for the click rate, while the top four models have similar KL divergences, we decide to proceed with the average probabilities predicted by the two random forest and two logistic regression models. As for the purchase rate, the top-five rankings are similar, but now neural network performs almost as good as the four best models. However, we still decide not to include neural network into our average model for purchase rate because it is a more flexible model, which should perform significantly better in order to justifies its inclusion by the principle of parsimony. Hence, we use the average of the four models written in blue to predict both probabilities. The last row of the table shows the KL divergence for the average model. 
 
+In order to illustrate how well each model fits the actual probabilities, we show their residual plots below. In each plot, the horizontal axis corresponds the various combinations of values of categorical predictors. The vertical axis is the probability deduced from counting the raw data minus that predicted by the model. Note that only the combinations of predictors with available data are plotted.
+<p align="center">
+<img src = "Pclick_residuals.png.png" width="600"></img>
+<img src = "Psold_residuals.png.png" width="600"></img>
+</p>
+
+
 
 
 [Back to Overview](#overview)
