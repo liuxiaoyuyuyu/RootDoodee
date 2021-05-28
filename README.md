@@ -85,9 +85,8 @@ The KL divergence for each model is shown in the table below for the predicted p
 <img src = "KL_divergences.png" width="600" height="375"></img>
 </p>
 From the table, we see that the random forest and logistic regression for both treatments of the `Currently Insured` feature have the lowest KL divergence, which implies better matches with the probabilities deduced from the data. This is true for the predictions of both probabilities. Since the fifth-best model, neural network, has total KL-divergence of more than 4 times the fourth-best model for the click rate, while the top four models have similar KL divergences, we decide to proceed with the average probabilities predicted by the two random forest and two logistic regression models. As for the purchase rate, the top-five rankings are similar, but now neural network performs almost as good as the four best models. However, we still decide not to include neural network into our average model for purchase rate because it is a more flexible model, which should perform significantly better in order to justifies its inclusion by the principle of parsimony. Hence, we use the average of the four models written in blue to predict both probabilities. The last row of the table shows the KL divergence for the average model. 
-
- 
-In order to illustrate how well each model fits the actual probabilities, we show their residual plots below. In each plot, the horizontal axis corresponds the various combinations of values of categorical predictors. The vertical axis is the probability deduced from counting the raw data minus that predicted by the model. Note that only the combinations of predictors with available data are plotted.
+<br />
+<br />In order to illustrate how well each model fits the actual probabilities, we show their residual plots below. In each plot, the horizontal axis corresponds the various combinations of values of categorical predictors. The vertical axis is the probability deduced from counting the raw data minus that predicted by the model. Note that only the combinations of predictors with available data are plotted.
 <p align="center">
 <img src = "Pclick_residuals.png" width="800"></img>
 </p>
@@ -129,36 +128,41 @@ ___
 ## Binomial Regression for Rank Distribution
 
 Besides the [predictions of click and purchase probabilities](#machine-learning-method-for-probability), another ingredient necessary for our [full optimization method](#gradient-descent) for bidding price is the probability that the insurance company's advertisement is displayed in each ranking from 1 to 5, given the customer's background information and the amount our company bid for this customer. If the advertisement is displayed in rank <img src="https://latex.codecogs.com/svg.image?r" title="r" />, then <img src="https://latex.codecogs.com/svg.image?r-1" title="r-1" /> out of the 4 other companies competing in the vertical search channel bid higher than our company. The main goal of this section is to determine the probability mass function (PMF) <img src="https://latex.codecogs.com/svg.image?P_i(r;B_i)" title="Pi" /> of <img src="https://latex.codecogs.com/svg.image?r" title="r" /> given the bidding amount <img src="https://latex.codecogs.com/svg.image?B_i" title="Bi" /> for a customer with combination of features (i.e. type) <img src="https://latex.codecogs.com/svg.image?i" title="i" />. To do so, we make the following assumptions for each <img src="https://latex.codecogs.com/svg.image?i" title="i" />.
--1). For a fixed bidding price <img src="https://latex.codecogs.com/svg.image?B_i" title="Bi" />, each of the 4 other companies has the same probability, <img src="https://latex.codecogs.com/svg.image?\pi_i(B_i)" title="pi_i" />, of bidding higher than our company.
--2). Each of the 4 companies bid independently.
+- For a fixed bidding price <img src="https://latex.codecogs.com/svg.image?B_i" title="Bi" />, each of the 4 other companies has the same probability, <img src="https://latex.codecogs.com/svg.image?\pi_i(B_i)" title="pi_i" />, of bidding higher than our company.
+- Each of the 4 companies bid independently.
 
 With the two assumptions above, we deduce that <img src="https://latex.codecogs.com/svg.image?P_i(r;%20B_i)" title="Pi" /> follows a binomial distribution in <img src="https://latex.codecogs.com/svg.image?r-1" title="r-1" /> with <img src="https://latex.codecogs.com/svg.image?n=4" title="n=4" /> trials and probability of success <img src="https://latex.codecogs.com/svg.image?\pi_i(B_i)" title="pi_i" />, depending on the bidding price <img src="https://latex.codecogs.com/svg.image?B_i" title="Bi" />: 
 <p align="center">
 <img src="https://latex.codecogs.com/svg.image?P_i(r;%20B_i)={4\choose%20r-1}\left[\pi_i(B_i)\right]^{r-1}\left[1-\pi_i(B_i)\right]^{5-r}" title="binom_pmf" />
 </p>
 Hence, this is a <a href="https://en.wikipedia.org/wiki/Binomial_regression">binomial regression problem.</a> 
-
-To relate for each <img src="https://latex.codecogs.com/svg.image?i" title="i" /> the estimated probability of success <img src="https://latex.codecogs.com/svg.image?\hat{\pi}_i" title="pi_i_hat" /> with <img src="https://latex.codecogs.com/svg.image?B_i" title="Bi" />, we employ the <a href="https://en.wikipedia.org/wiki/Generalized_linear_model#Link_function">canonical link function,</a> that is, the logistic link function. This implies that
+<br />
+<br /><p>To relate for each <img src="https://latex.codecogs.com/svg.image?i" title="i" /> the estimated probability of success <img src="https://latex.codecogs.com/svg.image?\hat{\pi}_i" title="pi_i_hat" /> with <img src="https://latex.codecogs.com/svg.image?B_i" title="Bi" />, we employ the <a href="https://en.wikipedia.org/wiki/Generalized_linear_model#Link_function">canonical link function,</a> that is, the logistic link function. Explicitly, we have</p>
 <p align="center">
 <img src="https://latex.codecogs.com/svg.image?\hat{\pi}_i=\frac{1}{1+e^{-\left[a_i(B_i-10)+b_{i0}\right]}}" title="logistic" />
 </p>
-Here, <img src="https://latex.codecogs.com/svg.image?b_{i0}" title="bi0" /> implies the amount of bidding <img src="https://latex.codecogs.com/svg.image?B_i" title="Bi" /> at which <img src="https://latex.codecogs.com/svg.image?\hat{\pi}_i=\frac{1}{2}" title="pi_i_hat=1/2" />, while <img src="https://latex.codecogs.com/svg.image?a_i<0" title="a_i<0" /> measures how spread-out the other companies' bidding prices are. In particular, larger <img src="https://latex.codecogs.com/svg.image?\left|a_i\right|" title="abs_a_i" /> means other companies’ bidding prices are closer to one another (e.g $10.1, 10.2, $9.8...), and smaller <img src="https://latex.codecogs.com/svg.image?\left|a_i\right|" title="abs_a_i" /> means other companies’ bidding prices are more spread out (e.g $7, $9, $15...). 
+<p>Here, <img src="https://latex.codecogs.com/svg.image?b_{i0}" title="bi0" /> implies the amount of bidding <img src="https://latex.codecogs.com/svg.image?B_i" title="Bi" /> at which <img src="https://latex.codecogs.com/svg.image?\hat{\pi}_i=\frac{1}{2}" title="pi_i_hat=1/2" />, while <img src="https://latex.codecogs.com/svg.image?a_i<0" title="a_i<0" /> measures how spread-out the other companies' bidding prices are. In particular, larger <img src="https://latex.codecogs.com/svg.image?\left|a_i\right|" title="abs_a_i" /> means other companies’ bidding prices are closer to one another (e.g $10.1, 10.2, $9.8...), and smaller <img src="https://latex.codecogs.com/svg.image?\left|a_i\right|" title="abs_a_i" /> means other companies’ bidding prices are more spread out (e.g $7, $9, $15...).</p>
 
-In our approach, we fit the ranking distribution from the data, in which the bidding price is $10 for all customers, with the binomial PMF to estimate <img src="https://latex.codecogs.com/svg.image?\pi_i(B_i=\$10)" title="pi_i(Bi=10)" /> for each customer type <img src="https://latex.codecogs.com/svg.image?i" title="i" />. Then, we use the results to compute <img src="https://latex.codecogs.com/svg.image?b_{i0}" title="bi0" />'s using 
+<p>More intuitive reasons behind the choice of logistic link function include:</p>
+<p>- The values of <img src="https://latex.codecogs.com/svg.image?\hat{\pi}_i" title="pi_i_hat" />, which is a probability, gets mapped onto the whole real line, which is the range for linear functions of <img src="https://latex.codecogs.com/svg.image?B_i" title="Bi" />.</p>
+<p>- A change in bidding price has more impact on <img src="https://latex.codecogs.com/svg.image?\hat{\pi}_i" title="pi_i_hat" /> and hence <img src="https://latex.codecogs.com/svg.image?P_i(r;B_i)" title="Pi" /> if <img src="https://latex.codecogs.com/svg.image?B_i" title="Bi" /> is in the region where <img src="https://latex.codecogs.com/svg.image?\hat{\pi}_i" title="pi_i_hat" /> is close to 0.5, e.g. an increase from $8 to $10. This should be contrasted to e.g. an increase from $1000 to $1002, whose impact on <img src="https://latex.codecogs.com/svg.image?\hat{\pi}_i" title="pi_i_hat" /> is minimal. </p>
+
+<p>In our approach, we fit the ranking distribution from the data, in which the bidding price is $10 for all customers, with the binomial PMF to estimate <img src="https://latex.codecogs.com/svg.image?\pi_i(B_i=\$10)" title="pi_i(Bi=10)" /> for each customer type <img src="https://latex.codecogs.com/svg.image?i" title="i" />. Then, we use the results to compute <img src="https://latex.codecogs.com/svg.image?b_{i0}" title="bi0" />'s using</p>
 <p align="center">
 <img src="https://latex.codecogs.com/svg.image?b_{i0}=\ln\left(\frac{\pi_i}{1-\pi_i}\right)\Big|_{B_i=\$10}" title="bi0_eqn" />
 </p>
-This method results in the following fits for various customer types. 
+This method results in the following fits for various customer types. <br />
+<br />
 <p align="center">
 <img src = "Binomial_regression_plots.png" width="900"></img>
 </p>
-The plots above display the probabilities of being in rank <img src="https://latex.codecogs.com/svg.image?r" title="r" /> for each customer type. The orange markers represent the actual probabilities deduced from counting the data, while the blue markers represent those resulted from the fits.
+<p>The plots above display the probabilities of being in rank <img src="https://latex.codecogs.com/svg.image?r" title="r" /> for each customer type. The orange markers represent the actual probabilities deduced from counting the data, while the blue markers represent those resulted from the fits.</p>
 
 (PERHAPS PROVIDE A TABLE OF b_i0's HERE)
 
 As for <img src="https://latex.codecogs.com/svg.image?a_i" title="a_i" />, we require the data at different bidding price in order to make a well-inform estimate of the parameter. Instead, we make another assumption that it is -ln(7) (HOW MUCH??? PLEASE MODIFY TO THE NUMBER YOU USED.) 
 
-for all customer types. This number implies that, if we decrease our bidding price by $1, the odd (<img src="https://latex.codecogs.com/svg.image?\frac{\pi_i}{1-\pi_i}" title="odd" />) that another company bids higher than ours will increase by a multiple of 7. (MODIFY THE NUMBER PLEASE)
+for all customer types. This number implies that, if we decrease our bidding price by $1, the odd, <img src="https://latex.codecogs.com/svg.image?\frac{\pi_i}{1-\pi_i}" title="odd" />, that another company bids higher than ours will increase by a multiple of 7. (MODIFY THE NUMBER PLEASE)
 
 
 
