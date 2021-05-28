@@ -149,7 +149,7 @@ Hence, this is a <a href="https://en.wikipedia.org/wiki/Binomial_regression">bin
 
 <p>In our approach, we fit the ranking distribution from the data, in which the bidding price is $10 for all customers, with the binomial PMF to estimate <img src="https://latex.codecogs.com/svg.image?\pi_i(B_i=\$10)" title="pi_i(Bi=10)" /> for each customer type <img src="https://latex.codecogs.com/svg.image?i" title="i" />. Then, we use the results to compute <img src="https://latex.codecogs.com/svg.image?b_{i0}" title="bi0" />'s using</p>
 <p align="center">
-<img src="https://latex.codecogs.com/svg.image?b_{i0}=\ln\left(\frac{\pi_i}{1-\pi_i}\right)\Big|_{B_i=\$10}" title="bi0_eqn" />
+<img src="https://latex.codecogs.com/svg.image?b_{i0}=\ln\left(\frac{\pi_i}{1-\pi_i}\right)\bigg|_{B_i=\$10}" title="bi0_eqn" />
 </p>
 This method results in the following fits for various customer types. <br />
 <br />
