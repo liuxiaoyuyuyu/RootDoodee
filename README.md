@@ -137,13 +137,13 @@ With the two assumptions above, we deduce that <img src="https://latex.codecogs.
 </p>
 Hence, this is a <a href="https://en.wikipedia.org/wiki/Binomial_regression">binomial regression problem.</a> 
 <br />
-<br /><p>To relate for each <img src="https://latex.codecogs.com/svg.image?i" title="i" /> the estimated probability of success <img src="https://latex.codecogs.com/svg.image?\hat{\pi}_i" title="pi_i_hat" /> with <img src="https://latex.codecogs.com/svg.image?B_i" title="Bi" />, we employ the <a href="https://en.wikipedia.org/wiki/Generalized_linear_model#Link_function">canonical link function,</a> that is, the logistic link function. Explicitly, we have</p>
+<br /><p>To relate for each <img src="https://latex.codecogs.com/svg.image?i" title="i" /> the estimated probability of success <img src="https://latex.codecogs.com/svg.image?\hat{\pi}_i" title="pi_i_hat" /> with <img src="https://latex.codecogs.com/svg.image?B_i" title="Bi" />, we employ the <a href="https://en.wikipedia.org/wiki/Generalized_linear_model#Link_function">canonical link function,</a> that is, the logit link function. Explicitly, we have</p>
 <p align="center">
 <img src="https://latex.codecogs.com/svg.image?\hat{\pi}_i=\frac{1}{1+e^{-\left[a_i(B_i-10)+b_{i0}\right]}}" title="logistic" />
 </p>
 <p>Here, <img src="https://latex.codecogs.com/svg.image?b_{i0}" title="bi0" /> implies the amount of bidding <img src="https://latex.codecogs.com/svg.image?B_i" title="Bi" /> at which <img src="https://latex.codecogs.com/svg.image?\hat{\pi}_i=\frac{1}{2}" title="pi_i_hat=1/2" />, while <img src="https://latex.codecogs.com/svg.image?a_i<0" title="a_i<0" /> measures how spread-out the other companies' bidding prices are. In particular, larger <img src="https://latex.codecogs.com/svg.image?\left|a_i\right|" title="abs_a_i" /> means other companies’ bidding prices are closer to one another (e.g $10.1, 10.2, $9.8...), and smaller <img src="https://latex.codecogs.com/svg.image?\left|a_i\right|" title="abs_a_i" /> means other companies’ bidding prices are more spread out (e.g $7, $9, $15...).</p>
 
-<p>More intuitive reasons behind the choice of logistic link function include:</p>
+<p>More intuitive reasons behind the choice of logit link function include:</p>
 <p>- The values of <img src="https://latex.codecogs.com/svg.image?\hat{\pi}_i" title="pi_i_hat" />, which is a probability, gets mapped onto the whole real line, which is the range for linear functions of <img src="https://latex.codecogs.com/svg.image?B_i" title="Bi" />.</p>
 <p>- A change in bidding price has more impact on <img src="https://latex.codecogs.com/svg.image?\hat{\pi}_i" title="pi_i_hat" /> and hence <img src="https://latex.codecogs.com/svg.image?P_i(r;B_i)" title="Pi" /> if <img src="https://latex.codecogs.com/svg.image?B_i" title="Bi" /> is in the region where <img src="https://latex.codecogs.com/svg.image?\hat{\pi}_i" title="pi_i_hat" /> is close to 0.5, e.g. an increase from $8 to $10. This should be contrasted to e.g. an increase from $1000 to $1002, whose impact on <img src="https://latex.codecogs.com/svg.image?\hat{\pi}_i" title="pi_i_hat" /> is minimal. </p>
 
