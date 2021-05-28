@@ -4,12 +4,12 @@ This is a Erdos data science Bootcamp project. We explore the dataset from insur
 ___
 ## Overview
 
-- [Project description](#description)
+- [Project description](#project-description)
 - [Data Exploration](#data-exploration)
-- [Machine learning approaches for probabilities](#machine-learning-method-for-probability)
-- [Basic optimization method](#strategy-for-the-bidding-price)
-- [Binomial regression for rank distribution](#binomial-fit)
-- [Full optimization method](#gradient-descent)
+- [Machine learning approaches for probabilities](#machine-learning-approaches-for-probabilities)
+- [Basic optimization method](#basic-optimization-method)
+- [Binomial regression for rank distribution](#binomial-regression-for-rank-distribution)
+- [Full optimization method](#full-optimization-method)
 - [Authors](#authorship)
 
 ___
