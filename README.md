@@ -85,13 +85,7 @@ Statistically, we're not dealing with a classification problem but a probability
 
 ### Targets of the Problem
 
-Notice that the probabilities are all conditioned, e.g. the probability of the 2nd-rank ads being clicked but not sold. Thus, in principle, we have a classification of 15 type (5 ranks, click and sold or not, no click).
-
-<img src="https://latex.codecogs.com/svg.image?newtar&space;=&space;3(r-1)&space;&plus;&space;i,&space;\quad&space;i&space;=&space;0,&space;1,&space;2," title="newtar = 3(r-1) + i, \quad i = 0, 1, 2," />
-
-where i=0,1,2 for sold, click but not sold and not click, respectively. However, the samples are limitted for some targets to stratify. So a more suitable one to assume that the sold rate is independent once the customer click, then we only need to have 10 type of new targets
-
-<img src="https://latex.codecogs.com/svg.image?newtar&space;=&space;2(r-1)&space;&plus;&space;i,&space;\quad&space;i&space;=&space;0,&space;1," title="newtar = 2(r-1) + i, \quad i = 0, 1," />
+Notice that the probabilities are all conditioned, e.g. the probability of the 2nd-rank ads being clicked but not sold. Thus, in principle, we have a classification of 15 type (5 ranks, click and sold or not, no click). However, the samples are limitted for some targets to stratify. So a more suitable one to assume that the sold rate is independent once the customer click, then we only need to have 10 type of new targets.
 
 ##### However
 
@@ -109,21 +103,18 @@ In this section, we used the probabilities obtained from <a href="https://github
 
 Since the goal is to "optimize the cost per customer while having 4% customer rate over all ads shown". The simpliest intuition is to bid more on valuable customers. If we forget about the 4% constraint for a second, to decrease the cost per sold, we only need to consider the probability `P(sold|click)` for a customer as the company only need to pay when clicks happen
 
-<img src="https://latex.codecogs.com/svg.image?P(sold|click)=\frac{P(\text{sold&space;and&space;click})}{P(click)}=\frac{P(sold)}{P(click)}" title="P(sold|click)=\frac{P(\text{sold and click})}{P(click)}=\frac{P(sold)}{P(click)}" />
+<img src="https://latex.codecogs.com/svg.image?P(\text{sold}|\text{click})=\frac{P(\text{sold&space;and&space;click})}{P(\text{click})}=\frac{P(\text{sold})}{P(\text{click})}" title="P(\text{sold}|\text{click})=\frac{P(\text{sold and click})}{P(\text{click})}=\frac{P(\text{sold})}{P(\text{click})}" />
 
 Since current cost per customer is around 24.0 dollars per customer and the sold rate (sold/shown) is 7.83\% and average P(sold|click)=41.69\%, if we set the average as the baseline for 10 dollars and assume we invest linearly with the probability `P(sold|click)`, we'll have cost per customer even higher 24.19 dollars.
 
 
 However, we give ads to all the samples. In reality, we should have some budget and stop showing more ads once the number of click with paid price reaches our budget. Current cost is $18,780 and we could set it as our budget and stop once reached though random sampling.
 
-
-#### As we can see, from all these sampling trials, the simple linear strategy gives a bit higher cost per customer. We need to add more to current strategy. 
-
 What if we take extreme cases? In the limit of infinite budget and customer samples, we should invest all the budget to the most valuable customer so as to obtain the best cost per customer. However, the limited budget and customer samples requires us invest on more customer with lower bound given by the 4% customer rate. Compared to previous strategy, the linear relation with the average `P(sold|click)` rate might be two slow. Thus, here we try a exponential function function 
 
 <img src="https://latex.codecogs.com/svg.image?B=&space;1&plus;e^{C&space;(P-\bar{P})}" title="B= 1+e^{C (P-\bar{P})}" />
 
-where the bidding price has minimum 1 dollar. The coefficient in the exponent <img src="https://latex.codecogs.com/svg.image?C\equiv&space;20" title="C\equiv 20" />. <img src="https://latex.codecogs.com/svg.image?\bar{P}" title="\bar{P}" /> is the average of <img src="https://latex.codecogs.com/svg.image?P(S|C)" title="P(S|C)" />.
+where the bidding price has minimum 1 dollar. If we constrain the bidding price range to [1,20], the coefficient in the exponent <img src="https://latex.codecogs.com/svg.image?C=&space;7.4" title="C= 7.4" />. <img src="https://latex.codecogs.com/svg.image?\bar{P}=0.2" title="\bar{P}=0.2" /> is an offset average.
 
 
 
