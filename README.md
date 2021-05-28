@@ -4,15 +4,14 @@ This is a Erdos data science Bootcamp project. We explore the dataset from insur
 ___
 ## Overview
 
-- [Project Description](#description)
-- [Customer features](#features)
-- [Target of the problem](#targets)
-- [Machine Learning approaches for probabilities](#machine-learning-method-for-probability)
+- [Project description](#description)
+- [Data Exploration](#data-exploration)
+- [Machine learning approaches for probabilities](#machine-learning-method-for-probability)
 - [Strategy for the bidding price](#strategy-for-the-bidding-price)
 - [Authors](#authorship)
 
 ___
-## Description
+## Project Description
 
 The goals of the project are:
 - Understand the dataset: we have dataset with 10,000 "impressions" of ads, where the relation between customers and the insurance commercials hides.
@@ -23,8 +22,9 @@ The goals of the project are:
 [Back to Overview](#overview)
 ___
 
+## Data Exploration
 
-## Features
+### Customer Features
 
 We'll first explore how the dataset looks like and how the customers are featured.
 <p align="center">
@@ -46,7 +46,7 @@ Thus, statistically, we're not dealing with a classification problem but a proba
 
 [Back to Overview](#overview)
 ___
-## Targets
+### Targets of the Problem
 
 Notice that the probabilities are all conditioned, e.g. the probability of the 2nd-rank ads being clicked but not sold. Thus, in principle, we have a classification of 15 type (5 ranks, click and sold or not, no click).
 
@@ -56,7 +56,7 @@ where i=0,1,2 for sold, click but not sold and not click, respectively. However,
 
 <img src="https://latex.codecogs.com/svg.image?newtar&space;=&space;2(r-1)&space;&plus;&space;i,&space;\quad&space;i&space;=&space;0,&space;1," title="newtar = 2(r-1) + i, \quad i = 0, 1," />
 
-#### However
+##### However
 
 How should we deal with the relation between bidding price and the ranking? We have no other info from the dataset, or we need to search for more supporting relations. But we could adopt a simple but very reasonable assumption:
 `The overall buying probability of a particular type of clicked customers is independent of their ranking`
@@ -68,13 +68,25 @@ Different ranks have similar frequencies.
 
 [Back to Overview](#overview)
 ___
-## Machine Learning method for probability
+## Machine Learning Approaches for Probabilities
 
-Despite we're working on a probability problem, we could utilize powerful machine learning method with cross validation to obtain the probability conditioned on observed data. We'll explore a varity of classification methods and use the metric of <a href="https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence">Kullback-Leibler divergence</a> to quantify the distribution difference between the training and testing set. Specifically, we'll show the probabilities obtained from <a href="https://github.com/dmlc/xgboost">XGBoost</a>, which is an efficient application of <a href="https://en.wikipedia.org/wiki/Gradient_boosting">Gradient boosting</a>.
+As will be clear later, it is necessary for later steps in this project to know the probability that a customer will click on our insurance company advertisement and the probability that he/she will purchase the insurance company's policy, given the customer information and the ranking in which the advertisement is displayed. Although one can obtain these probabilities simply by counting the data, this is not an option for all types of customers in all ranks, as for some types of customers we do not have the data of those in all the ranks. For example, for uninsured, married customers with 3 vehicles and 2 drivers, we only have their data in ranks 3, 4 and 5. The need to fill in the blanks and predict the probabilities of click and purchase by customers of all types and ranks motivates us to construct a machine learning model to complete the task.
+
+We explored various models with the aim of predicting the probabilities of click and purchase given customer features and ranks. The models include <a href="https://en.wikipedia.org/wiki/Random_forest">random forest,</a> <a href="https://en.wikipedia.org/wiki/Logistic_regression">logistic regression,</a> <a href="https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm">k-nearest neighbor,</a> <a href="https://en.wikipedia.org/wiki/Support-vector_machine">support-vector machine</a> and <a href="https://en.wikipedia.org/wiki/Neural_network">neural network.</a> Each model is tuned using cross-validation on the training data set, while we set aside the test data set for final model selection. With the goal of predicting the probabilities rather than predicting the definite values of categorical targets, we utilize the metric of <a href="https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence">Kullback-Leibler divergence</a> (KL divergence) to quantify the probability distribution difference between the training and testing set. 
+
+The KL divergence for each model is shown in the table below for the predicted probabilities of click and purchase. 
+<p align="center">
+<img src = "KL_divergences.png" width="600" height="375"></img>
+</p>
+
+
+
 
 [Back to Overview](#overview)
 ___
-## Strategy for the bidding price
+## Strategy for the Bidding Price
+
+Disclaimer: we used the probabilities obtained from <a href="https://github.com/dmlc/xgboost">XGBoost</a>, which is an efficient application of <a href="https://en.wikipedia.org/wiki/Gradient_boosting">Gradient boosting</a>, to perform the computation in this section.
 
 Since the goal is to "optimize the cost per customer while having 4% customer rate over all ads shown". The simpliest intuition is to bid more on valuable customers. If we forget about the 4% constraint for a second, to decrease the cost per sold, we only need to consider the probability `P(sold|click)` for a customer as the company only need to pay when clicks happen
 
