@@ -89,15 +89,17 @@ Notice that the probabilities are all conditioned, e.g. the probability of the 2
 
 ##### However
 
-How should we deal with the relation between bidding price and the ranking? We have no other info from the dataset, or we need to search for more supporting relations. But we could adopt a simple but very reasonable assumption:
+How should we deal with the relation between bidding price and the ranking? We have no other info from the dataset, or we need to search for more supporting relations. For a naive model, we could adopt a **key assumption**:
+
 `The overall buying probability of a particular type of clicked customers is independent of their ranking`
+
 Afterall, the ranking is an evaluation of the market (other companies) to the customer (how much they want to earn this customer). Once the customer clicked, the probability of buying should be the internal feature of the customer. Thus, if we view a customer as a stock, ranking is more like the market price while the buying probability is the EPS (earning per share), measuring how profitable of the stock company.
 <p align="center">
 <img src = "rankDist.png" width="500"></img>
 </p>
 Different ranks have similar frequencies.
 
-### Model and Optimization
+### Naive Bidding Price Model
 
 In this section, we used the probabilities obtained from <a href="https://github.com/dmlc/xgboost">XGBoost</a>, which is an efficient application of <a href="https://en.wikipedia.org/wiki/Gradient_boosting">Gradient boosting</a>, to perform the computation in this section.
 
